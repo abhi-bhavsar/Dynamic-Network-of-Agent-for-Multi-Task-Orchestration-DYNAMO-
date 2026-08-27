@@ -5,8 +5,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Get the Database URL from the .env file (using your password 'abhi')
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:abhi@localhost:5432/dynamo_db")
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+if not DATABASE_URL:
+    raise ValueError("DATABASE_URL environment variable is not set")
 
 engine = create_engine(DATABASE_URL)
 
