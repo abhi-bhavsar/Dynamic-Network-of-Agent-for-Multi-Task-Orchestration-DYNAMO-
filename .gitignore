@@ -1,0 +1,30 @@
+# Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+
+# Python Cache & Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Environment Variables & Secrets
+.env
+.env.local
+.env.*.local
+
+# Database & Persistent Volumes
+*.sqlite3
+pgdata/
+
+# IDE & OS Artifacts
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Jupyter & Benchmark Output
+.ipynb_checkpoints/
+*.log
