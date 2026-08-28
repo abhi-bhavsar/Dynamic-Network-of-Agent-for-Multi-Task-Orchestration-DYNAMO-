@@ -1,47 +1,49 @@
 from .database import SessionLocal
 from .models import BenchmarkRun
 
-def save_benchmark_to_db(query: str, static_time: float, dynamic_time: float, static_tok: int, dynamic_tok: int):
-    """
-    Takes the execution metrics from the DYNAMO run and saves them
-    as a new row in the PostgreSQL database for the IEEE paper.
-    """
+def save_benchmark_to_db(
+    user_query: str, 
+    model_used: str, 
+    static_latency: float, 
+    static_tokens: int, 
+    dynamic_latency: float, 
+    dynamic_tokens: int,
+    latency_improv: float,
+    token_savings: float,
+    policy: str,
+    agents_count: int
+):
     print("💾 Attempting to save metrics to PostgreSQL...")
-    
-    # 1. Open a connection to the database
     db = SessionLocal() 
     
     try:
-        # 2. Calculate percentages safely (handling None if static was skipped)
-        latency_saved = None
-        tokens_saved = None
+        latency_saved = latency_improv
+        tokens_saved = token_savings
         
-        if static_time and dynamic_time and static_time > 0:
-            latency_saved = ((static_time - dynamic_time) / static_time) * 100
+        if static_latency and dynamic_latency and static_latency > 0 and not latency_saved:
+            latency_saved = ((static_latency - dynamic_latency) / static_latency) * 100
             
-        if static_tok and dynamic_tok and static_tok > 0:
-            tokens_saved = ((static_tok - dynamic_tok) / static_tok) * 100
-        
-        # 3. Create a new "Row" of data using the Blueprint from models.py
+        if static_tokens and dynamic_tokens and static_tokens > 0 and not tokens_saved:
+            tokens_saved = ((static_tokens - dynamic_tokens) / static_tokens) * 100
+            
+        # EXACTLY matching your models.py (Removed policy and agents_spawned)
         new_run = BenchmarkRun(
-            user_query=query,
-            static_latency_ms=static_time,
-            dynamic_latency_ms=dynamic_time,
-            static_tokens=static_tok,
-            dynamic_tokens=dynamic_tok,
-            latency_reduction_percent=latency_saved,
+            user_query=user_query,
+            model_used=model_used,
+            static_latency_ms=static_latency,
+            static_tokens=static_tokens,
+            dynamic_latency_ms=dynamic_latency,
+            dynamic_tokens=dynamic_tokens,
+            latency_reduction_percent=latency_saved, 
             token_savings_percent=tokens_saved
         )
         
-        # 4. Add the row to the database and "commit" (save) it
         db.add(new_run)
         db.commit()
-        
         print("✅ Successfully saved benchmark run to database!")
         
     except Exception as e:
-        db.rollback() # Cancel the transaction if it failed
+        db.rollback() 
         print(f"❌ Error saving to database: {e}")
     finally:
-        # 5. Always close the connection when done
         db.close()

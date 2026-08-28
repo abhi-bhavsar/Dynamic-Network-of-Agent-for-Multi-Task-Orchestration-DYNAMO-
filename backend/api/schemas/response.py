@@ -26,14 +26,22 @@ class QueryResponse(BaseModel):
 class BenchmarkResult(BaseModel):
     query: str
     dynamic_tokens: int
-    static_tokens: Optional[int]
+    static_tokens: Optional[int] = None
     dynamic_latency_ms: float
-    static_latency_ms: Optional[float]
-    token_savings_pct: Optional[float]
-    latency_improvement_pct: Optional[float]
+    static_latency_ms: Optional[float] = None
+    token_savings_pct: Optional[float] = None
+    latency_improvement_pct: Optional[float] = None
     policy_selected: str
     agents_spawned: int
-    static_agents: int
+    static_agents: int = 5
+    
+    # ── Fields required for UI rendering in benchmark mode ────
+    report: str = ""
+    confidence: float = 0.0
+    policy: Optional[str] = None
+    agent_outputs: Dict[str, Any] = {}
+    feature_vector: Dict[str, Any] = {}
+    errors: List[str] = []
 
 
 class HealthResponse(BaseModel):

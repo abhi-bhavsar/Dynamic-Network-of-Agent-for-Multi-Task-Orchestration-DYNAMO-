@@ -1,6 +1,6 @@
-from typing import Dict, Any
+import re
+from typing import Any, Dict
 from langchain_core.messages import HumanMessage, SystemMessage
-
 
 SYNTHESIS_SYSTEM_PROMPT = """You are DYNAMO's Synthesis Agent — the final layer of the pipeline.
 Your job is to merge findings from multiple specialist agents into one coherent research report.
@@ -45,9 +45,12 @@ class SynthesisAgent:
         policy: str,
     ) -> Dict[str, Any]:
         if not agent_outputs:
-            return {"report": "No agent outputs available to synthesize.", "confidence": 0.0}
+            return {
+                "report": "No agent outputs available to synthesize.",
+                "confidence": 0.0,
+                "synthesis_tokens": 0,
+            }
 
-        # Build findings block from all agents
         findings_block = ""
         confidences = []
         total_tokens = 0
@@ -58,9 +61,9 @@ class SynthesisAgent:
                 conf = output.get("confidence", 0.8)
                 tokens = output.get("tokens_used", 0)
             else:
-            	findings = str(output)
-            	conf = 0.8
-            	tokens = 0
+                findings = str(output)
+                conf = 0.8
+                tokens = 0
 
             if findings and not findings.startswith("[ERROR]"):
                 label = agent_key.replace("deploy_", "").replace("_", " ").title()
@@ -69,27 +72,32 @@ class SynthesisAgent:
                 total_tokens += tokens
 
         if not findings_block.strip():
-            return {"report": "All agents returned errors. No synthesis possible.", "confidence": 0.0}
+            return {
+                "report": "All agents returned errors. No synthesis possible.",
+                "confidence": 0.0,
+                "synthesis_tokens": 0,
+            }
 
         avg_confidence = sum(confidences) / len(confidences) if confidences else 0.0
 
         messages = [
             SystemMessage(content=SYNTHESIS_SYSTEM_PROMPT),
-            HumanMessage(content=(
-                f"Original Query: {query}\n"
-                f"Spawning Policy Used: {policy}\n"
-                f"Agents Activated: {len(agent_outputs)}\n\n"
-                f"Agent Findings:\n{findings_block}\n\n"
-                "Synthesize the above into a structured research report."
-            )),
+            HumanMessage(
+                content=(
+                    f"Original Query: {query}\n"
+                    f"Spawning Policy Used: {policy}\n"
+                    f"Agents Activated: {len(agent_outputs)}\n\n"
+                    f"Agent Findings:\n{findings_block}\n\n"
+                    "Synthesize the above into a structured research report."
+                )
+            ),
         ]
 
         try:
             response = await self.llm.ainvoke(messages)
             report = response.content
 
-            # Try to extract overall confidence from synthesis output
-            import re
+            # Extract overall confidence from synthesis text if available
             match = re.search(r"[Oo]verall [Cc]onfidence[:\s]+([01]\.\d{1,2})", report)
             if match:
                 avg_confidence = float(match.group(1))

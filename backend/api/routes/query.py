@@ -27,7 +27,8 @@ async def process_query(request: QueryRequest):
         result = await dynamo_graph.ainvoke(state)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"DYNAMO pipeline error: {str(e)}")
-    wall_latency = round((time.time() - wall_start) * 1000, 2)
+    
+    wall_latency = round((time.time() - wall_start) * 1000.0, 2)
 
     return QueryResponse(
         query=request.query,
@@ -58,58 +59,68 @@ async def run_benchmark(request: BenchmarkRequest):
         dyn_result = await dynamo_graph.ainvoke(dyn_state)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Dynamic run failed: {str(e)}")
-    dyn_latency = round((time.time() - t0) * 1000, 2)
+    
+    # Keep raw precision for the database
+    dyn_latency_raw = (time.time() - t0) * 1000.0
     dyn_tokens = dyn_result.get("total_tokens", 0)
     dyn_agents = len(dyn_result.get("agent_outputs", {}))
+    policy_name = dyn_result.get("selected_policy", "unknown")
 
     # ── Static baseline run (optional) ────────────────────────
-    stat_tokens, stat_latency, stat_agents = None, None, 5
+    stat_tokens, stat_latency_raw, stat_agents = None, None, 5
 
     if request.include_static:
         from ...benchmark.runner import run_static_baseline
         try:
             t1 = time.time()
             stat_result = await run_static_baseline(request.query)
-            stat_latency = round((time.time() - t1) * 1000, 2)
+            stat_latency_raw = (time.time() - t1) * 1000.0
             stat_tokens = stat_result.get("total_tokens", 0)
         except Exception:
             pass  # Static baseline failure doesn't break benchmark
 
-    # ── Compute improvement metrics ────────────────────────────
-    token_savings_pct = None
-    latency_improvement_pct = None
+    # ── Compute raw improvement metrics (Double Precision) ─────
+    raw_token_savings_pct = None
+    raw_latency_improvement_pct = None
 
     if stat_tokens and stat_tokens > 0:
-        token_savings_pct = round((1 - dyn_tokens / stat_tokens) * 100, 2)
-    if stat_latency and stat_latency > 0:
-        latency_improvement_pct = round((1 - dyn_latency / stat_latency) * 100, 2)
+        raw_token_savings_pct = ((stat_tokens - dyn_tokens) / stat_tokens) * 100.0
+    if stat_latency_raw and stat_latency_raw > 0:
+        raw_latency_improvement_pct = ((stat_latency_raw - dyn_latency_raw) / stat_latency_raw) * 100.0
 
-    # ── Save metrics to PostgreSQL ─────────────────────────────
+    # ── Save unrounded metrics to PostgreSQL ───────────────────
     try:
         save_benchmark_to_db(
             user_query=request.query,
             model_used=dyn_result.get("model_used", "openai/gpt-oss-20b"),
-            static_latency=stat_latency or 0.0,
+            static_latency=stat_latency_raw or 0.0,
             static_tokens=stat_tokens or 0,
-            dynamic_latency=dyn_latency,
+            dynamic_latency=dyn_latency_raw,
             dynamic_tokens=dyn_tokens,
-            latency_improv=latency_improvement_pct or 0.0,
-            token_savings=token_savings_pct or 0.0,
-            policy=dyn_result.get("selected_policy", "unknown"),
+            latency_improv=raw_latency_improvement_pct or 0.0,
+            token_savings=raw_token_savings_pct or 0.0,
+            policy=policy_name,
             agents_count=dyn_agents,
         )
     except Exception as db_err:
         print(f"⚠️ Database logging warning: {db_err}")
 
+    # ── Return formatted UI payload + Synthesized Report ───────
     return BenchmarkResult(
         query=request.query,
         dynamic_tokens=dyn_tokens,
         static_tokens=stat_tokens,
-        dynamic_latency_ms=dyn_latency,
-        static_latency_ms=stat_latency,
-        token_savings_pct=token_savings_pct,
-        latency_improvement_pct=latency_improvement_pct,
-        policy_selected=dyn_result.get("selected_policy", "unknown"),
+        dynamic_latency_ms=round(dyn_latency_raw, 2),
+        static_latency_ms=round(stat_latency_raw, 2) if stat_latency_raw else None,
+        token_savings_pct=round(raw_token_savings_pct, 2) if raw_token_savings_pct is not None else None,
+        latency_improvement_pct=round(raw_latency_improvement_pct, 2) if raw_latency_improvement_pct is not None else None,
+        policy_selected=policy_name,
+        policy=policy_name,
         agents_spawned=dyn_agents,
         static_agents=stat_agents,
+        report=dyn_result.get("final_report", "No report generated."),
+        confidence=dyn_result.get("confidence_score", 0.0),
+        agent_outputs=dyn_result.get("agent_outputs", {}),
+        feature_vector=dyn_result.get("feature_vector", {}),
+        errors=dyn_result.get("errors", []),
     )
