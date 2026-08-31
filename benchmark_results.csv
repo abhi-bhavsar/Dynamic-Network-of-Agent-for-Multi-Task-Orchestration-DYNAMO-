@@ -1,0 +1,23 @@
+run_id,timestamp,query,tier,policy_selected,agents_spawned,static_agents,dynamic_tokens,static_tokens,token_savings_pct,dynamic_latency_ms,static_latency_ms,latency_improvement_pct,status
+SIMPLE-001,2026-08-30T17:13:45.811803,Explain the Price-to-Earnings (P/E) ratio and what a high P/E signals about market expectations.,Simple,on_demand,2,5,4699,8691,45.93,32604.39,32212.45,-1.22,success
+SIMPLE-002,2026-08-30T17:14:55.935788,What are the primary business segments that Apple Inc. operates across?,Simple,on_demand,2,5,4012,4542,11.67,21902.45,24191.94,9.46,success
+SIMPLE-003,2026-08-30T17:15:47.079520,Explain the key difference between fundamental analysis and technical analysis in equity investing.,Simple,on_demand,2,5,4332,6880,37.03,25325.83,32154.29,21.24,success
+SIMPLE-004,2026-08-30T17:16:49.609436,What is the Reserve Bank of India's primary role in India's monetary policy framework?,Simple,on_demand,2,5,4192,4260,1.6,24973.28,23520.22,-6.18,success
+SIMPLE-005,2026-08-30T17:17:43.177449,"Define market capitalisation and explain how it is used to classify stocks into large, mid, and small-cap.",Simple,on_demand,1,5,2656,6772,60.78,14693.52,34655.57,57.6,success
+SIMPLE-006,2026-08-30T17:18:37.577444,What does Earnings Per Share (EPS) indicate about a company's profitability?,Simple,on_demand,2,5,2742,8608,68.15,21500.96,39789.21,45.96,success
+SIMPLE-007,2026-08-30T17:19:43.952854,Explain the concept of dividend yield and why income investors prioritise it.,Simple,on_demand,1,5,2653,8268,67.91,19408.55,40500.05,52.08,success
+SIMPLE-008,2026-08-30T17:20:48.950658,What are the primary revenue streams of Microsoft Corporation?,Simple,on_demand,2,5,4568,7259,37.07,26438.96,38442.02,31.22,success
+SIMPLE-009,2026-08-30T17:21:58.868877,Explain the difference between a bull market and a bear market.,Simple,on_demand,1,5,2431,10755,77.4,16318.71,50492.85,67.68,success
+SIMPLE-010,2026-08-30T17:23:10.718639,What does the debt-to-equity ratio measure and what level is considered healthy?,Simple,on_demand,1,5,2974,9150,67.5,25665.22,43233.52,40.64,success
+SIMPLE-011,2026-08-30T17:24:24.717530,What is SEBI's role in regulating Indian capital markets?,Simple,on_demand,2,5,5200,7971,34.76,32106.81,38296.7,16.16,success
+SIMPLE-012,2026-08-30T17:25:40.183719,Define free cash flow and explain why Warren Buffett considers it a key metric.,Simple,on_demand,2,5,4650,7201,35.43,22883.15,36628.72,37.53,success
+SIMPLE-013,2026-08-30T17:26:44.745689,Explain what Return on Equity (ROE) measures and what a high ROE typically indicates.,Simple,on_demand,2,5,3801,7960,52.25,22761.25,27672.37,17.75,success
+SIMPLE-014,2026-08-30T17:27:40.256949,What is the difference between the BSE and NSE in the Indian equity market?,Simple,on_demand,2,5,4775,10192,53.15,26202.34,51144.9,48.77,success
+SIMPLE-015,2026-08-30T17:29:02.648806,Explain what an Initial Public Offering (IPO) is and the typical steps involved.,Simple,on_demand,2,5,5995,5475,-9.5,35310.56,32369.79,-9.08,success
+SIMPLE-016,2026-08-30T17:30:15.396586,What is the difference between growth investing and value investing philosophies?,Simple,composite,2,5,5688,5224,-8.88,28367.46,28817.55,1.56,success
+SIMPLE-001,2026-08-30T17:35:24.336014,Explain what Net Profit Margin indicates and how it varies across industries.,Simple,on_demand,2,5,6294,9102,30.85,25376.17,42980.36,40.96,success
+SIMPLE-002,2026-08-30T17:36:37.872369,Define GDP and explain why macroeconomic growth matters for equity market returns.,Simple,composite,4,5,9594,9864,2.74,51923.18,48595.25,-6.85,success
+SIMPLE-003,2026-08-30T17:38:23.453491,What is inflation and how does it affect the real returns of equity and bond investors?,Simple,on_demand,1,5,3675,8781,58.15,26090.12,35296.87,26.08,success
+SIMPLE-004,2026-08-30T17:39:29.894085,"Explain what a mutual fund is, how NAV is calculated, and the difference between growth and dividend plans.",Simple,on_demand,1,5,4105,6142,33.17,25028.12,31320.44,20.09,success
+SIMPLE-005,2026-08-30T17:40:31.278226,What factors historically drive gold prices higher and what role does gold play in a portfolio?,Simple,composite,4,5,8979,3844,-133.58,47164.33,21319.79,-121.22,success
+SIMPLE-006,2026-08-30T17:41:44.794935,Explain what a credit rating is and how agencies like Moody's and CRISIL assign ratings.,Simple,on_demand,2,5,0,0,,3111.53,4984.81,37.58,success
