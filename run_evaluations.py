@@ -11,21 +11,20 @@ DELAY_SEC   = 3          # Groq free tier rate limit buffer
 CSV_OUTPUT  = "benchmark_results.csv"   # local fallback — always saved
 
 # ── Queries (your 16 Simple-tier queries) ────────────────────
-EVALUATION_QUERIES = [
-    "Explain what a credit rating is and how agencies like Moody's and CRISIL assign ratings.",
-    "What is the difference between fiscal policy and monetary policy, and which institutions control each in India?",
-    "Explain the concept of sector rotation in equity markets and which sectors typically lead in each cycle.",
-    "What does the NIFTY 50 index represent and how are its constituent stocks selected?",
-    "Explain what short selling is and the risk it poses to investors who use it.",
-    "What are the main business segments of Reliance Industries?",
-    "Explain what the Price-to-Book (P/B) ratio measures and why it is widely used for bank stocks.",
-    "What is the difference between systematic risk and unsystematic risk in portfolio theory?",
-    "Explain the concept of asset allocation and why it matters more than individual stock selection.",
-    "What is a repo rate and how does an RBI repo rate hike affect bank lending and equity markets?",
-    "Define beta in the context of equity investing and what a beta above 1.0 implies.",
-    "Explain what a Non-Performing Asset (NPA) is and why it is the key risk metric for Indian banks."
-]
+# EVALUATION_QUERIES = [
+    
+    # "Full research on Reliance Industries: energy transition strategy (green hydrogen, renewables), Jio's telecom dominance and financial services ambitions, JioMart's retail scale-up, petrochemicals market position, and conglomerate valuation approach.",
+    # "Analyze India's inflation dynamics — structural food inflation drivers, core inflation stickiness, RBI's inflation targeting framework — and assess the impact on equity valuations, bond markets, and the banking sector's Net Interest Margins.",
+    # "Deep dive into the global pharmaceutical sector: patent cliff risk for major drugs, biosimilar market growth, US FDA regulatory dynamics, drug pricing reform pressure, and the investment case for Indian pharma companies in the global generics market.",
+    # "Comprehensive research on Indian real estate: urbanisation-driven demand drivers, RERA regulatory transformation, leading developer financial profiles, REIT market development, affordable housing policy, and investment frameworks for the sector.",
+    # "Analyze how major geopolitical realignment events — US-China trade war, Russia-Ukraine conflict, Middle East tensions — have historically impacted global equity markets, sector rotation patterns, and implications for emerging market allocations including India."
+# ]
 
+EVALUATION_QUERIES = [
+    "Explain the investment thesis for Reliance Industries across its three core segments: petrochemicals, Jio telecom, and JioMart retail.",
+    "Compare subscription-based revenue models (Netflix, Microsoft 365) versus advertising-based models (Meta, Google) on growth and margin stability.",
+    "Explain the investment case for gold as a portfolio hedge and when gold has historically delivered the strongest returns."
+]
 # ── CSV columns — these are the IEEE benchmark metrics ────────
 CSV_HEADERS = [
     "run_id", "timestamp", "query", "tier",
