@@ -1,12 +1,32 @@
-FROM python:3.11-slim
+# ── Stage 1: Build the React Application ─────────────────────────
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir streamlit requests pydantic httpx plotly
+# Copy dependency manifests
+COPY package.json package-lock.json* ./
 
-COPY frontend/ ./frontend/
+# Install dependencies cleanly
+RUN npm ci || npm install
 
-EXPOSE 8501
+# Copy frontend source files
+COPY . .
 
-CMD ["streamlit", "run", "frontend/app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+# Build production bundle
+RUN npm run build
+
+# ── Stage 2: Serve with High-Performance Nginx ──────────────────
+FROM nginx:1.25-alpine
+
+# Remove default nginx html
+RUN rm -rf /usr/share/nginx/html/*
+
+# Copy compiled assets from builder stage
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Copy custom Nginx configuration
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

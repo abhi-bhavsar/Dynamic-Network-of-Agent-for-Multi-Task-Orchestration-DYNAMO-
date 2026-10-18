@@ -14,6 +14,10 @@ def save_benchmark_to_db(
     agents_count: int
 ):
     print("💾 Attempting to save metrics to PostgreSQL...")
+    if SessionLocal is None:
+        print("⚠️ Skipping database save: No DATABASE_URL configured or connection failed.")
+        return
+
     db = SessionLocal() 
     
     try:

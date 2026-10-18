@@ -40,6 +40,8 @@ async def process_query(request: QueryRequest):
         tokens_used=result.get("total_tokens", 0),
         latency_ms=result.get("latency_ms", wall_latency),
         agent_outputs=result.get("agent_outputs", {}),
+        memory_slices=result.get("memory_slices", {}),
+        spawn_manifest=result.get("spawn_manifest", {}),
         errors=result.get("errors", []),
     )
 
@@ -121,6 +123,133 @@ async def run_benchmark(request: BenchmarkRequest):
         report=dyn_result.get("final_report", "No report generated."),
         confidence=dyn_result.get("confidence_score", 0.0),
         agent_outputs=dyn_result.get("agent_outputs", {}),
+        memory_slices=dyn_result.get("memory_slices", {}),
+        spawn_manifest=dyn_result.get("spawn_manifest", {}),
         feature_vector=dyn_result.get("feature_vector", {}),
         errors=dyn_result.get("errors", []),
     )
+
+
+@router.get("/agents")
+async def get_agent_fleet():
+    """Returns the specialist agent registry metadata and domain parameters."""
+    from ...memory.slicer import AGENT_RELEVANCE_MAP
+    return {
+        "agents": [
+            {
+                "id": "deploy_market",
+                "name": "Market Data Agent",
+                "role": "market_specialist",
+                "domain": "Prices, Trading Volumes, Momentum, Moving Averages, Technicals",
+                "keywords": AGENT_RELEVANCE_MAP.get("deploy_market", []),
+                "description": "Analyzes market conditions, historical price action, momentum, and technical chart indicators.",
+                "color": "#06B6D4"
+            },
+            {
+                "id": "deploy_sentiment",
+                "name": "Sentiment Agent",
+                "role": "sentiment_specialist",
+                "domain": "News Sentiment, Analyst Ratings, Social Buzz, Media Perception",
+                "keywords": AGENT_RELEVANCE_MAP.get("deploy_sentiment", []),
+                "description": "Performs NLP analysis across financial news, analyst consensus, and social chatter.",
+                "color": "#8B5CF6"
+            },
+            {
+                "id": "deploy_fundamental",
+                "name": "Fundamental Agent",
+                "role": "fundamental_specialist",
+                "domain": "Earnings, Balance Sheets, Valuation Ratios, SEC Filings",
+                "keywords": AGENT_RELEVANCE_MAP.get("deploy_fundamental", []),
+                "description": "Evaluates P/E, EPS, balance sheet health, cash flows, and corporate quarterly filings.",
+                "color": "#10B981"
+            },
+            {
+                "id": "deploy_risk",
+                "name": "Risk Assessment Agent",
+                "role": "risk_specialist",
+                "domain": "Volatility, Beta, Downside Risk, VaR, Hedging",
+                "keywords": AGENT_RELEVANCE_MAP.get("deploy_risk", []),
+                "description": "Quantifies portfolio exposure, market correlation, volatility limits, and risk hedging strategies.",
+                "color": "#F59E0B"
+            },
+            {
+                "id": "deploy_macro",
+                "name": "Macroeconomic Agent",
+                "role": "macro_specialist",
+                "domain": "GDP, Inflation, Interest Rates, Central Bank Policy, Currency",
+                "keywords": AGENT_RELEVANCE_MAP.get("deploy_macro", []),
+                "description": "Assesses monetary policy trends, sovereign yield curves, macroeconomic inflation, and FX shifts.",
+                "color": "#EC4899"
+            }
+        ]
+    }
+
+
+@router.get("/policies")
+async def get_policies():
+    """Returns the PSE policy space descriptions and trigger criteria."""
+    from ...pse.policies import PolicyType, POLICY_DESCRIPTIONS, COMPLEXITY_TO_AGENTS
+    return {
+        "policies": [
+            {
+                "type": PolicyType.ON_DEMAND.value,
+                "name": "On-Demand Spawning",
+                "condition": "N ≥ 0.7, C ≤ 2, U < 0.6",
+                "best_for": "Novel, simple, non-urgent queries. Zero idle overhead.",
+                "description": POLICY_DESCRIPTIONS[PolicyType.ON_DEMAND]
+            },
+            {
+                "type": PolicyType.POOL_BASED.value,
+                "name": "Pool-Based Spawning",
+                "condition": "N < 0.4, U ≥ 0.7",
+                "best_for": "Urgent, predictable queries requiring near-zero spawn latency.",
+                "description": POLICY_DESCRIPTIONS[PolicyType.POOL_BASED]
+            },
+            {
+                "type": PolicyType.PREDICTIVE.value,
+                "name": "Predictive Provisioning",
+                "condition": "R ≥ 0.6, U < 0.7",
+                "best_for": "Recurring session query patterns where history predicts required agents.",
+                "description": POLICY_DESCRIPTIONS[PolicyType.PREDICTIVE]
+            },
+            {
+                "type": PolicyType.HIERARCHICAL.value,
+                "name": "Hierarchical Decomposition",
+                "condition": "C ≥ 4, N ≥ 0.5",
+                "best_for": "Deeply complex, multi-domain novel research requiring all specialist agents.",
+                "description": POLICY_DESCRIPTIONS[PolicyType.HIERARCHICAL]
+            },
+            {
+                "type": PolicyType.COMPOSITE.value,
+                "name": "Composite Hybrid",
+                "condition": "Mixed signals / boundary conditions",
+                "best_for": "Ambiguous query profiles; hedges by spawning an extra agent.",
+                "description": POLICY_DESCRIPTIONS[PolicyType.COMPOSITE]
+            }
+        ],
+        "complexity_mapping": COMPLEXITY_TO_AGENTS
+    }
+
+
+@router.post("/pse/analyze")
+async def analyze_pse(request: QueryRequest):
+    """
+    Simulates the PSE module for a given query without calling LLMs.
+    Returns computed feature vector F(Q), selected policy, and target agents in under 5ms.
+    """
+    from ...pse.feature_extractor import feature_extractor
+    from ...pse.policy_selector import policy_selector
+    from ...pse.policies import PolicyType
+
+    features = feature_extractor.compute(request.query)
+    policy = policy_selector.select_policy(features)
+    agents = policy_selector.select_agents(features, policy)
+    explanation = policy_selector.get_policy_explanation(features, policy)
+
+    return {
+        "query": request.query,
+        "feature_vector": features,
+        "selected_policy": policy.value,
+        "selected_agents": agents,
+        "explanation": explanation
+    }

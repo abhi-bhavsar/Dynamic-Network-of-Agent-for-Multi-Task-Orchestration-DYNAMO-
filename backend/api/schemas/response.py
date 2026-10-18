@@ -20,6 +20,8 @@ class QueryResponse(BaseModel):
     tokens_used: int
     latency_ms: float
     agent_outputs: Dict[str, Any]
+    memory_slices: Optional[Dict[str, Any]] = None
+    spawn_manifest: Optional[Dict[str, Any]] = None
     errors: List[str] = []
 
 
@@ -40,6 +42,8 @@ class BenchmarkResult(BaseModel):
     confidence: float = 0.0
     policy: Optional[str] = None
     agent_outputs: Dict[str, Any] = {}
+    memory_slices: Optional[Dict[str, Any]] = None
+    spawn_manifest: Optional[Dict[str, Any]] = None
     feature_vector: Dict[str, Any] = {}
     errors: List[str] = []
 

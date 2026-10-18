@@ -9,12 +9,24 @@ from .api.routes.query import router as query_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Startup: pre-compile the LangGraph and warm up the LLM client."""
+    """Startup: pre-compile the LangGraph, warm up LLM, and initialize DB tables."""
     print(f"🚀 Starting DYNAMO — model: {settings.GROQ_MODEL}")
     from .orchestrator.graph import dynamo_graph  # triggers compile
     print("✅ LangGraph compiled and ready")
+
+    # Auto-initialize database tables in Supabase / PostgreSQL
+    try:
+        from .core.database import engine, Base
+        from .core.models import BenchmarkRun
+        if engine is not None:
+            Base.metadata.create_all(bind=engine)
+            print("✅ Database tables verified and ready in PostgreSQL / Supabase")
+    except Exception as e:
+        print(f"⚠️ Warning: Database auto-initialization could not complete: {e}")
+
     yield
     print("🛑 DYNAMO shutting down")
+
 
 
 app = FastAPI(

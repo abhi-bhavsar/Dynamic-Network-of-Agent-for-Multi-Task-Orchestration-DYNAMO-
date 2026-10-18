@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  # ── PostgreSQL Database (Telemetry & Benchmarking) ─────────────
+  db:
+    image: postgres:15-alpine
+    container_name: dynamo_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: abhi
+      POSTGRES_DB: dynamo_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d dynamo_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ── FastAPI Backend (LangGraph + PSE + Specialist Agents) ──────
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: dynamo_backend
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=postgresql://postgres:abhi@db:5432/dynamo_db
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - GROQ_MODEL=${GROQ_MODEL:-openai/gpt-oss-20b}
+      - LANGCHAIN_TRACING_V2=${LANGCHAIN_TRACING_V2:-false}
+      - LANGCHAIN_API_KEY=${LANGCHAIN_API_KEY}
+      - LANGCHAIN_PROJECT=${LANGCHAIN_PROJECT:-dynamo-dev}
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/health')\" || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # ── Modern React Frontend (High-Performance Nginx SPA) ─────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: dynamo_frontend
+    restart: unless-stopped
+    ports:
+      - "8501:80"
+      - "3000:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+    name: dynamo_pgdata

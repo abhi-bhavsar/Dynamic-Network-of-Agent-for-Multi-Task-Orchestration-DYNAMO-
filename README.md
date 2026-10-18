@@ -54,21 +54,39 @@ uvicorn backend.main:app --reload --port 8000
 
 ---
 
-### 5. Run the Frontend
+### 5. Run the Modern React Frontend (Recommended)
 
 Open **Terminal 2**:
 
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+*(Optional Legacy Streamlit backup)*:
 ```bash
 streamlit run frontend/app.py --server.port 8501
 ```
 
 ---
 
-### 6. Open in Your Browser
+### 6. Verify System Diagnostics
 
-* **Streamlit UI:** `http://localhost:8501`
-* **API Documentation:** `http://localhost:8000/docs`
-* **Health Check:** `http://localhost:8000/health`
+Run the automated production-readiness verification:
+
+```bash
+python scripts/verify_setup.py
+```
+
+---
+
+### 7. Open in Your Browser
+
+* **⚡ Modern React Executive Dashboard:** `http://localhost:5173`
+* **📖 FastAPI Swagger Documentation:** `http://localhost:8000/docs`
+* **🩺 Health & Telemetry Status:** `http://localhost:8000/health`
+* **🎈 Legacy Streamlit UI:** `http://localhost:8501`
 
 ---
 
@@ -346,3 +364,6 @@ while maintaining the capability to handle complex research tasks through adapti
 # 🚀 DYNAMO
 
 **Dynamic orchestration. Selective computation. Adaptive multi-agent systems.**
+
+
+<!-- postgresql://postgres:kvHHNJsQvU16st1v@db.zthfqihinsgvoyrvgkop.supabase.co:5432/postgres -->

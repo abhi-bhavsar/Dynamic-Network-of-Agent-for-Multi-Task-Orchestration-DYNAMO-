@@ -28,3 +28,12 @@ Thumbs.db
 # Jupyter & Benchmark Output
 .ipynb_checkpoints/
 *.log
+
+# Node.js & Frontend Build Artifacts
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+.vite/
+
+cmt.txt
