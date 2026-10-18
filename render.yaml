@@ -22,12 +22,12 @@ services:
         value: INFO
 
   # ── Frontend: Modern React Executive Dashboard (Static Site) ─
-  - type: web
+  - type: static
     name: dynamo-frontend
-    runtime: static
     buildCommand: cd frontend && npm install && npm run build
     staticPublishPath: frontend/dist
     autoDeploy: true
+
     routes:
       - type: rewrite
         source: /*

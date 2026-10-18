@@ -1,9 +1,12 @@
 import { generateSimulatedResponse, MOCK_AGENTS, MOCK_POLICIES } from './mockData';
 
-let BASE_URL =
+const INITIAL_URL =
   (typeof window !== 'undefined' && localStorage.getItem('dynamo_api_url')) ||
   import.meta.env.VITE_API_BASE_URL ||
   'http://localhost:8000';
+
+let BASE_URL = String(INITIAL_URL).replace(/\/+$/, '');
+
 
 export function setApiBaseUrl(url) {
   BASE_URL = url.replace(/\/+$/, '');
