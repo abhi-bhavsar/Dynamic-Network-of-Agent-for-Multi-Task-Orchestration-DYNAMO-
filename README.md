@@ -548,37 +548,17 @@ OK
 ```
 
 ---
-
-## 📜 Research Paper & Citation
-
-If you use DYNAMO in your research or production systems, please cite our empirical evaluation paper:
-
-```bibtex
-@inproceedings{ajalkar2026dynamo,
-  title     = {DYNAMO: Dynamic Network of Agent for Multitask Orchestration},
-  author    = {Ajalkar, Deepika and Patle, Arti and Bhavsar, Abhishek and Pawar, Amogh and Chintawar, Raj},
-  booktitle = {Proceedings of the International Conference on Autonomous Agents and Multi-Agent Systems},
-  year      = {2026},
-  address   = {Pune, India},
-  organization = {Dept. of Data Science, G H Raisoni College of Engineering and Management}
-}
-```
-
----
-
 ## 👨‍💻 Engineering Team & Connect
 
 DYNAMO was engineered and researched by:
 
 * **Abhishek Bhavsar** — *Lead Architect & Systems Engineer*  
   [![GitHub](https://img.shields.io/badge/GitHub-abhi--bhavsar-181717.svg?logo=github)](https://github.com/abhi-bhavsar)
-  [![Email](https://img.shields.io/badge/Email-abhishek.bhavsar.ds%40ghrcem.raisoni.net-D14836.svg?logo=gmail&logoColor=white)](mailto:abhishek.bhavsar.ds@ghrcem.raisoni.net)
-  [![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0A66C2.svg?logo=linkedin)](https://linkedin.com/in/abhishek-bhavsar)
-* **Prof. Deepika Ajalkar** & **Dr. Arti Patle** — *Research Direction & Faculty Mentorship*
+
 * **Amogh Pawar** & **Raj Chintawar** — *Research & Benchmarking Collaboration*
 
 > **💼 Open for Remote AI / Distributed Systems Roles:**  
-> I specialize in building production-grade **Autonomous Multi-Agent Architectures, Distributed Orchestration Engines, and Low-Latency LLM Systems**. If you're building next-generation agent frameworks, enterprise RAG, or high-performance AI infrastructure, feel free to reach out directly via [Email](mailto:abhishek.bhavsar.ds@ghrcem.raisoni.net) or connect on [LinkedIn](https://linkedin.com/in/abhishek-bhavsar)!
+> I specialize in building production-grade **Autonomous Multi-Agent Architectures, Distributed Orchestration Engines, and Low-Latency LLM Systems**. If you're building next-generation agent frameworks, enterprise RAG, or high-performance AI infrastructure, feel free to reach out directly via [Email](mailto: bhavsarabhi1210@gmail.com) or connect on [LinkedIn](https://linkedin.com/in/abhishek-bhavsar)!
 
 ---
 
